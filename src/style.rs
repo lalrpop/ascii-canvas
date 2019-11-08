@@ -8,7 +8,7 @@ use term::{self, Terminal};
 
 #[derive(Copy, Clone, Default, PartialEq, Eq)]
 pub struct Style {
-    bits: u64
+    bits: u64,
 }
 
 macro_rules! declare_styles {
@@ -81,7 +81,9 @@ impl Style {
     }
 
     pub fn with(self, other_style: Style) -> Style {
-        Style { bits: self.bits | other_style.bits }
+        Style {
+            bits: self.bits | other_style.bits,
+        }
     }
 
     pub fn contains(self, other_style: Style) -> bool {
@@ -101,7 +103,7 @@ impl Style {
                         try!(term.fg(term::color::$term_color));
                     }
                 }
-            }
+            };
         }
 
         fg_color!(FG_BLACK, BLACK);
@@ -128,7 +130,7 @@ impl Style {
                         try!(term.bg(term::color::$term_color));
                     }
                 }
-            }
+            };
         }
 
         bg_color!(BG_BLACK, BLACK);
@@ -156,7 +158,7 @@ impl Style {
                         try!(term.attr(attr));
                     }
                 }
-            }
+            };
         }
 
         attr!(BOLD, term::Attr::Bold);
@@ -185,7 +187,7 @@ impl<'term, T: ?Sized + Terminal> StyleCursor<'term, T> {
         try!(current_style.apply(term));
         Ok(StyleCursor {
             current_style: current_style,
-            term: term
+            term: term,
         })
     }
 

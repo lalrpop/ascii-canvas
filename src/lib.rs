@@ -5,13 +5,14 @@
 extern crate term;
 
 use std::cmp;
-use std::ops::Range;
 use std::iter::ExactSizeIterator;
+use std::ops::Range;
 use style::Style;
 use term::Terminal;
 
 mod row;
-#[cfg(test)] mod test;
+#[cfg(test)]
+mod test;
 
 pub mod style;
 
@@ -30,22 +31,15 @@ pub trait AsciiView {
     fn write_char(&mut self, row: usize, column: usize, ch: char, style: Style);
 }
 
-impl<'a> AsciiView+'a {
-    fn add_box_dirs(&mut self,
-                    row: usize,
-                    column: usize,
-                    dirs: u8)
-    {
+impl<'a> AsciiView + 'a {
+    fn add_box_dirs(&mut self, row: usize, column: usize, dirs: u8) {
         let old_ch = self.read_char(row, column);
         let new_ch = add_dirs(old_ch, dirs);
         self.write_char(row, column, new_ch, Style::new());
     }
 
     /// Draws a line for the given range of rows at the given column.
-    pub fn draw_vertical_line(&mut self,
-                              rows: Range<usize>,
-                              column: usize)
-    {
+    pub fn draw_vertical_line(&mut self, rows: Range<usize>, column: usize) {
         let len = rows.len();
         for (index, r) in rows.enumerate() {
             let new_dirs = if index == 0 {
@@ -61,10 +55,7 @@ impl<'a> AsciiView+'a {
 
     /// Draws a horizontal line along a given row for the given range
     /// of columns.
-    pub fn draw_horizontal_line(&mut self,
-                                row: usize,
-                                columns: Range<usize>)
-    {
+    pub fn draw_horizontal_line(&mut self, row: usize, columns: Range<usize>) {
         let len = columns.len();
         for (index, c) in columns.enumerate() {
             let new_dirs = if index == 0 {
@@ -79,12 +70,9 @@ impl<'a> AsciiView+'a {
     }
 
     /// Writes characters in the given style at the given position.
-    pub fn write_chars<I>(&mut self,
-                          row: usize,
-                          column: usize,
-                          chars: I,
-                          style: Style)
-        where I: Iterator<Item=char>
+    pub fn write_chars<I>(&mut self, row: usize, column: usize, chars: I, style: Style)
+    where
+        I: Iterator<Item = char>,
     {
         for (i, ch) in chars.enumerate() {
             self.write_char(row, column + i, ch, style);
@@ -154,7 +142,7 @@ impl AsciiCanvas {
         self.in_range_index(r, self.columns)
     }
 
-    pub fn write_to<T:Terminal+?Sized>(&self, term: &mut T) -> term::Result<()> {
+    pub fn write_to<T: Terminal + ?Sized>(&self, term: &mut T) -> term::Result<()> {
         for row in self.to_strings() {
             try!(row.write_to(term));
             try!(writeln!(term, ""));
@@ -186,12 +174,7 @@ impl AsciiView for AsciiCanvas {
         self.characters[index]
     }
 
-    fn write_char(&mut self,
-                  row: usize,
-                  column: usize,
-                  ch: char,
-                  style: Style)
-    {
+    fn write_char(&mut self, row: usize, column: usize, ch: char, style: Style) {
         assert!(column < self.columns);
         let index = self.index(row, column);
         self.characters[index] = ch;
@@ -225,11 +208,11 @@ pub struct ShiftedView<'canvas> {
 }
 
 impl<'canvas> ShiftedView<'canvas> {
-    fn new(base: &'canvas mut AsciiView,
-           row: usize,
-           column: usize)
-           -> Self {
-        let upper_left = Point { row: row, column: column };
+    fn new(base: &'canvas mut AsciiView, row: usize, column: usize) -> Self {
+        let upper_left = Point {
+            row: row,
+            column: column,
+        };
         ShiftedView {
             base: base,
             upper_left: upper_left,
@@ -264,12 +247,7 @@ impl<'canvas> AsciiView for ShiftedView<'canvas> {
         self.base.read_char(row, column)
     }
 
-    fn write_char(&mut self,
-                  row: usize,
-                  column: usize,
-                  ch: char,
-                  style: Style)
-    {
+    fn write_char(&mut self, row: usize, column: usize, ch: char, style: Style) {
         let row = self.upper_left.row + row;
         let column = self.upper_left.column + column;
         self.track_max(row, column);
@@ -303,13 +281,9 @@ impl<'canvas> AsciiView for StyleView<'canvas> {
         self.base.read_char(row, column)
     }
 
-    fn write_char(&mut self,
-                  row: usize,
-                  column: usize,
-                  ch: char,
-                  style: Style)
-    {
-        self.base.write_char(row, column, ch, style.with(self.style))
+    fn write_char(&mut self, row: usize, column: usize, ch: char, style: Style) {
+        self.base
+            .write_char(row, column, ch, style.with(self.style))
     }
 }
 
@@ -330,20 +304,16 @@ const BOX_CHARS: &'static [(char, u8)] = &[
     ('┘', UP | LEFT),
     ('└', UP | RIGHT),
     ('┴', UP | LEFT | RIGHT),
-
     // No UP:
     ('╷', DOWN),
     ('┐', DOWN | LEFT),
     ('┌', DOWN | RIGHT),
     ('┬', DOWN | LEFT | RIGHT),
-
     // No UP|DOWN:
     ('╶', LEFT),
     ('─', LEFT | RIGHT),
-
     // No LEFT:
     ('╴', RIGHT),
-
     // No RIGHT:
     (' ', 0),
 ];
