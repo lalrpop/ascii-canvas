@@ -8,3 +8,6 @@ license = "Apache-2.0/MIT"
 
 [dependencies]
 term = "0.6"
+
+[dev-dependencies]
+diff = "0.1"

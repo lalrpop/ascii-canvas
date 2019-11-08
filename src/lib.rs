@@ -4,6 +4,9 @@
 
 extern crate term;
 
+#[cfg(test)]
+extern crate diff;
+
 use std::cmp;
 use std::iter::ExactSizeIterator;
 use std::ops::Range;
@@ -13,6 +16,8 @@ use term::Terminal;
 mod row;
 #[cfg(test)]
 mod test;
+#[cfg(test)]
+mod test_util;
 
 pub mod style;
 
