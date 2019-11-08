@@ -18,7 +18,7 @@ impl Row {
 
     pub fn write_to<T: Terminal + ?Sized>(&self, term: &mut T) -> term::Result<()> {
         let mut cursor = StyleCursor::new(term)?;
-        for (character, &style) in self.text.trim_right().chars().zip(&self.styles) {
+        for (character, &style) in self.text.trim_end().chars().zip(&self.styles) {
             cursor.set_style(style)?;
             write!(cursor.term(), "{}", character)?;
         }
@@ -30,7 +30,7 @@ impl Row {
 
 impl Display for Row {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
-        Display::fmt(self.text.trim_right(), fmt)
+        Display::fmt(self.text.trim_end(), fmt)
     }
 }
 
@@ -38,7 +38,7 @@ impl Debug for Row {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         // NB: use Display, not Debug, just throw some quotes around it
         write!(fmt, "\"")?;
-        Display::fmt(self.text.trim_right(), fmt)?;
+        Display::fmt(self.text.trim_end(), fmt)?;
         write!(fmt, "\"")
     }
 }
