@@ -144,8 +144,8 @@ impl AsciiCanvas {
 
     pub fn write_to<T: Terminal + ?Sized>(&self, term: &mut T) -> term::Result<()> {
         for row in self.to_strings() {
-            try!(row.write_to(term));
-            try!(writeln!(term, ""));
+            row.write_to(term)?;
+            writeln!(term, "")?;
         }
         Ok(())
     }
