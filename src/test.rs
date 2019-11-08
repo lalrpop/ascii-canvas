@@ -7,7 +7,7 @@ use super::{AsciiCanvas, AsciiView};
 fn draw_box() {
     let mut canvas = AsciiCanvas::new(5, 10);
     {
-        let view: &mut AsciiView = &mut canvas;
+        let view: &mut dyn AsciiView = &mut canvas;
         view.draw_vertical_line(2..5, 2);
         view.draw_vertical_line(2..5, 7);
         view.draw_horizontal_line(2, 2..8);
@@ -32,7 +32,7 @@ fn draw_box() {
 fn grow_box() {
     let mut canvas = AsciiCanvas::new(0, 10);
     {
-        let view: &mut AsciiView = &mut canvas;
+        let view: &mut dyn AsciiView = &mut canvas;
         view.draw_vertical_line(2..5, 2);
         view.draw_vertical_line(2..5, 7);
         view.draw_horizontal_line(2, 2..8);
@@ -57,8 +57,8 @@ fn grow_box() {
 fn shift() {
     let mut canvas = AsciiCanvas::new(0, 10);
     {
-        let canvas: &mut AsciiView = &mut canvas;
-        let view: &mut AsciiView = &mut canvas.shift(1, 2);
+        let canvas: &mut dyn AsciiView = &mut canvas;
+        let view: &mut dyn AsciiView = &mut canvas.shift(1, 2);
         view.draw_vertical_line(2..5, 2);
         view.draw_vertical_line(2..5, 7);
         view.draw_horizontal_line(2, 2..8);

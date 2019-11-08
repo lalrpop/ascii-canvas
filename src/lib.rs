@@ -31,7 +31,7 @@ pub trait AsciiView {
     fn write_char(&mut self, row: usize, column: usize, ch: char, style: Style);
 }
 
-impl<'a> AsciiView + 'a {
+impl<'a> dyn AsciiView + 'a {
     fn add_box_dirs(&mut self, row: usize, column: usize, dirs: u8) {
         let old_ch = self.read_char(row, column);
         let new_ch = add_dirs(old_ch, dirs);
@@ -197,7 +197,7 @@ struct Point {
 /// that out when you are finished.
 pub struct ShiftedView<'canvas> {
     // either the base canvas or another view
-    base: &'canvas mut AsciiView,
+    base: &'canvas mut dyn AsciiView,
 
     // fixed at creation: the content is always allowed to grow down,
     // but cannot grow right more than `num_columns`
@@ -208,7 +208,7 @@ pub struct ShiftedView<'canvas> {
 }
 
 impl<'canvas> ShiftedView<'canvas> {
-    fn new(base: &'canvas mut AsciiView, row: usize, column: usize) -> Self {
+    fn new(base: &'canvas mut dyn AsciiView, row: usize, column: usize) -> Self {
         let upper_left = Point {
             row: row,
             column: column,
@@ -259,12 +259,12 @@ impl<'canvas> AsciiView for ShiftedView<'canvas> {
 /// to things that are written. You can get one of these by calling
 /// the `styled()` method on any ASCII view.
 pub struct StyleView<'canvas> {
-    base: &'canvas mut AsciiView,
+    base: &'canvas mut dyn AsciiView,
     style: Style,
 }
 
 impl<'canvas> StyleView<'canvas> {
-    fn new(base: &'canvas mut AsciiView, style: Style) -> Self {
+    fn new(base: &'canvas mut dyn AsciiView, style: Style) -> Self {
         StyleView {
             base: base,
             style: style,
