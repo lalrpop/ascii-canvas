@@ -2,15 +2,10 @@
 //! fixed-sized canvas and then convert that canvas into ASCII
 //! characters. ANSI styling is supported.
 
-extern crate term;
-
-#[cfg(test)]
-extern crate diff;
-
+use crate::style::Style;
 use std::cmp;
 use std::iter::ExactSizeIterator;
 use std::ops::Range;
-use style::Style;
 use term::Terminal;
 
 mod row;

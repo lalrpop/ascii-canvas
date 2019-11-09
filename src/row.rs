@@ -1,5 +1,5 @@
+use crate::style::{Style, StyleCursor};
 use std::fmt::{Debug, Display, Error, Formatter};
-use style::{Style, StyleCursor};
 use term::{self, Terminal};
 
 pub struct Row {
@@ -29,13 +29,13 @@ impl Row {
 // Using display/debug just skips the styling.
 
 impl Display for Row {
-    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, fmt: &mut Formatter<'_>) -> Result<(), Error> {
         Display::fmt(self.text.trim_end(), fmt)
     }
 }
 
 impl Debug for Row {
-    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, fmt: &mut Formatter<'_>) -> Result<(), Error> {
         // NB: use Display, not Debug, just throw some quotes around it
         write!(fmt, "\"")?;
         Display::fmt(self.text.trim_end(), fmt)?;

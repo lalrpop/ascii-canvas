@@ -176,7 +176,7 @@ impl Style {
 
 ///////////////////////////////////////////////////////////////////////////
 
-pub struct StyleCursor<'term, T: ?Sized + Terminal + 'term> {
+pub struct StyleCursor<'term, T: ?Sized + Terminal> {
     current_style: Style,
     term: &'term mut T,
 }

@@ -1,10 +1,9 @@
-use diff;
 use std::fmt::{Debug, Error, Formatter};
 
 struct ExpectedDebug<'a>(&'a str);
 
 impl<'a> Debug for ExpectedDebug<'a> {
-    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, fmt: &mut Formatter<'_>) -> Result<(), Error> {
         write!(fmt, "{}", self.0)
     }
 }

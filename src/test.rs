@@ -1,7 +1,6 @@
-use style::Style;
-use test_util::expect_debug;
-
-use super::{AsciiCanvas, AsciiView};
+use crate::style::Style;
+use crate::test_util::expect_debug;
+use crate::{AsciiCanvas, AsciiView};
 
 #[test]
 fn draw_box() {
