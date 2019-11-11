@@ -8,7 +8,7 @@ use term::{self, Terminal};
 
 #[derive(Copy, Clone, Default, PartialEq, Eq)]
 pub struct Style {
-    bits: u64
+    bits: u64,
 }
 
 macro_rules! declare_styles {
@@ -81,7 +81,9 @@ impl Style {
     }
 
     pub fn with(self, other_style: Style) -> Style {
-        Style { bits: self.bits | other_style.bits }
+        Style {
+            bits: self.bits | other_style.bits,
+        }
     }
 
     pub fn contains(self, other_style: Style) -> bool {
@@ -92,16 +94,16 @@ impl Style {
     /// the style is not supported, either there is no effect or else
     /// a similar, substitute style may be applied.
     pub fn apply<T: Terminal + ?Sized>(self, term: &mut T) -> term::Result<()> {
-        try!(term.reset());
+        term.reset()?;
 
         macro_rules! fg_color {
             ($color:expr, $term_color:ident) => {
                 if self.contains($color) {
                     if term.supports_color() {
-                        try!(term.fg(term::color::$term_color));
+                        term.fg(term::color::$term_color)?;
                     }
                 }
-            }
+            };
         }
 
         fg_color!(FG_BLACK, BLACK);
@@ -125,10 +127,10 @@ impl Style {
             ($color:expr, $term_color:ident) => {
                 if self.contains($color) {
                     if term.supports_color() {
-                        try!(term.bg(term::color::$term_color));
+                        term.bg(term::color::$term_color)?;
                     }
                 }
-            }
+            };
         }
 
         bg_color!(BG_BLACK, BLACK);
@@ -153,10 +155,10 @@ impl Style {
                 if self.contains($attr) {
                     let attr = $term_attr;
                     if term.supports_attr(attr) {
-                        try!(term.attr(attr));
+                        term.attr(attr)?;
                     }
                 }
-            }
+            };
         }
 
         attr!(BOLD, term::Attr::Bold);
@@ -174,7 +176,7 @@ impl Style {
 
 ///////////////////////////////////////////////////////////////////////////
 
-pub struct StyleCursor<'term, T: ?Sized + Terminal + 'term> {
+pub struct StyleCursor<'term, T: ?Sized + Terminal> {
     current_style: Style,
     term: &'term mut T,
 }
@@ -182,10 +184,10 @@ pub struct StyleCursor<'term, T: ?Sized + Terminal + 'term> {
 impl<'term, T: ?Sized + Terminal> StyleCursor<'term, T> {
     pub fn new(term: &'term mut T) -> term::Result<StyleCursor<'term, T>> {
         let current_style = Style::default();
-        try!(current_style.apply(term));
+        current_style.apply(term)?;
         Ok(StyleCursor {
             current_style: current_style,
-            term: term
+            term: term,
         })
     }
 
@@ -195,7 +197,7 @@ impl<'term, T: ?Sized + Terminal> StyleCursor<'term, T> {
 
     pub fn set_style(&mut self, style: Style) -> term::Result<()> {
         if style != self.current_style {
-            try!(style.apply(self.term));
+            style.apply(self.term)?;
             self.current_style = style;
         }
         Ok(())

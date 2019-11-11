@@ -1,13 +1,12 @@
-use style::Style;
-use test_util::expect_debug;
-
-use super::{AsciiCanvas, AsciiView};
+use crate::style::Style;
+use crate::test_util::expect_debug;
+use crate::{AsciiCanvas, AsciiView};
 
 #[test]
 fn draw_box() {
     let mut canvas = AsciiCanvas::new(5, 10);
     {
-        let view: &mut AsciiView = &mut canvas;
+        let view: &mut dyn AsciiView = &mut canvas;
         view.draw_vertical_line(2..5, 2);
         view.draw_vertical_line(2..5, 7);
         view.draw_horizontal_line(2, 2..8);
@@ -21,16 +20,18 @@ fn draw_box() {
     "",
     "  ┌────┐",
     "  │    │",
-    "  └────┘"
+    "  └────┘",
 ]
-"#.trim());
+"#
+        .trim(),
+    );
 }
 
 #[test]
 fn grow_box() {
     let mut canvas = AsciiCanvas::new(0, 10);
     {
-        let view: &mut AsciiView = &mut canvas;
+        let view: &mut dyn AsciiView = &mut canvas;
         view.draw_vertical_line(2..5, 2);
         view.draw_vertical_line(2..5, 7);
         view.draw_horizontal_line(2, 2..8);
@@ -44,17 +45,19 @@ fn grow_box() {
     "",
     "  ┌────┐",
     "  │    │",
-    "  └────┘"
+    "  └────┘",
 ]
-"#.trim());
+"#
+        .trim(),
+    );
 }
 
 #[test]
 fn shift() {
     let mut canvas = AsciiCanvas::new(0, 10);
     {
-        let canvas: &mut AsciiView = &mut canvas;
-        let view: &mut AsciiView = &mut canvas.shift(1, 2);
+        let canvas: &mut dyn AsciiView = &mut canvas;
+        let view: &mut dyn AsciiView = &mut canvas.shift(1, 2);
         view.draw_vertical_line(2..5, 2);
         view.draw_vertical_line(2..5, 7);
         view.draw_horizontal_line(2, 2..8);
@@ -70,8 +73,9 @@ fn shift() {
     "",
     "    ┌────┐",
     "    │Hi! │",
-    "    └────┘"
+    "    └────┘",
 ]
-"#.trim());
+"#
+        .trim(),
+    );
 }
-
