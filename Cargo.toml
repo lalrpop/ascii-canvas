@@ -8,7 +8,8 @@ license = "Apache-2.0/MIT"
 edition = "2018"
 
 [dependencies]
-term = "0.7"
+anstream = "0.6.0"
+anstyle = "1.0"
 
 [dev-dependencies]
 diff = "0.1"

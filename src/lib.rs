@@ -2,11 +2,12 @@
 //! fixed-sized canvas and then convert that canvas into ASCII
 //! characters. ANSI styling is supported.
 
+use anstream::stream::RawStream;
+
 use crate::style::Style;
 use std::cmp;
 use std::iter::ExactSizeIterator;
 use std::ops::Range;
-use term::Terminal;
 
 mod row;
 #[cfg(test)]
@@ -142,7 +143,7 @@ impl AsciiCanvas {
         self.in_range_index(r, self.columns)
     }
 
-    pub fn write_to<T: Terminal + ?Sized>(&self, term: &mut T) -> term::Result<()> {
+    pub fn write_to<T: RawStream>(&self, term: &mut T) -> std::io::Result<()> {
         for row in self.to_strings() {
             row.write_to(term)?;
             writeln!(term, "")?;
