@@ -5,8 +5,6 @@
 
 use std::default::Default;
 
-use anstream::stream::RawStream;
-
 #[derive(Copy, Clone, Default, PartialEq, Eq)]
 pub struct Style {
     bits: u64,
@@ -94,7 +92,7 @@ impl Style {
     /// Attempts to apply the given style to the given terminal. If
     /// the style is not supported, either there is no effect or else
     /// a similar, substitute style may be applied.
-    pub fn apply<T: RawStream>(self, term: &mut T) -> std::io::Result<()> {
+    pub fn apply<T: std::io::Write>(self, term: &mut T) -> std::io::Result<()> {
         let mut s = anstyle::Style::new();
         s.write_reset_to(term)?;
 
@@ -172,12 +170,12 @@ impl Style {
 
 ///////////////////////////////////////////////////////////////////////////
 
-pub struct StyleCursor<'term, T: RawStream> {
+pub struct StyleCursor<'term, T: std::io::Write> {
     current_style: Style,
     term: &'term mut T,
 }
 
-impl<'term, T: RawStream> StyleCursor<'term, T> {
+impl<'term, T: std::io::Write> StyleCursor<'term, T> {
     pub fn new(term: &'term mut T) -> std::io::Result<StyleCursor<'term, T>> {
         let current_style = Style::default();
         current_style.apply(term)?;
