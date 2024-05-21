@@ -1,5 +1,3 @@
-use anstream::stream::RawStream;
-
 use crate::style::{Style, StyleCursor};
 use std::fmt::{Debug, Display, Error, Formatter};
 
@@ -17,7 +15,7 @@ impl Row {
         }
     }
 
-    pub fn write_to<T: RawStream>(&self, term: &mut T) -> std::io::Result<()> {
+    pub fn write_to<T: std::io::Write>(&self, term: &mut T) -> std::io::Result<()> {
         let mut cursor = StyleCursor::new(term)?;
         for (character, &style) in self.text.trim_end().chars().zip(&self.styles) {
             cursor.set_style(style)?;
