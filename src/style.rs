@@ -4,7 +4,6 @@
 //! etc.
 
 use std::default::Default;
-use term::{self, Terminal};
 
 #[derive(Copy, Clone, Default, PartialEq, Eq)]
 pub struct Style {
@@ -93,96 +92,100 @@ impl Style {
     /// Attempts to apply the given style to the given terminal. If
     /// the style is not supported, either there is no effect or else
     /// a similar, substitute style may be applied.
-    pub fn apply<T: Terminal + ?Sized>(self, term: &mut T) -> term::Result<()> {
-        term.reset()?;
+    pub fn apply<T: std::io::Write + std::io::IsTerminal>(
+        self,
+        term: &mut T,
+    ) -> std::io::Result<()> {
+        let mut s = anstyle::Style::new();
+        s.write_reset_to(term)?;
 
         macro_rules! fg_color {
             ($color:expr, $term_color:ident) => {
                 if self.contains($color) {
-                    if term.supports_color() {
-                        term.fg(term::color::$term_color)?;
+                    if term.is_terminal() {
+                        s = s.fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::$term_color)));
                     }
                 }
             };
         }
 
-        fg_color!(FG_BLACK, BLACK);
-        fg_color!(FG_BLUE, BLUE);
-        fg_color!(FG_BRIGHT_BLACK, BRIGHT_BLACK);
-        fg_color!(FG_BRIGHT_BLUE, BRIGHT_BLUE);
-        fg_color!(FG_BRIGHT_CYAN, BRIGHT_CYAN);
-        fg_color!(FG_BRIGHT_GREEN, BRIGHT_GREEN);
-        fg_color!(FG_BRIGHT_MAGENTA, BRIGHT_MAGENTA);
-        fg_color!(FG_BRIGHT_RED, BRIGHT_RED);
-        fg_color!(FG_BRIGHT_WHITE, BRIGHT_WHITE);
-        fg_color!(FG_BRIGHT_YELLOW, BRIGHT_YELLOW);
-        fg_color!(FG_CYAN, CYAN);
-        fg_color!(FG_GREEN, GREEN);
-        fg_color!(FG_MAGENTA, MAGENTA);
-        fg_color!(FG_RED, RED);
-        fg_color!(FG_WHITE, WHITE);
-        fg_color!(FG_YELLOW, YELLOW);
+        fg_color!(FG_BLACK, Black);
+        fg_color!(FG_BLUE, Blue);
+        fg_color!(FG_BRIGHT_BLACK, BrightBlack);
+        fg_color!(FG_BRIGHT_BLUE, BrightBlue);
+        fg_color!(FG_BRIGHT_CYAN, BrightCyan);
+        fg_color!(FG_BRIGHT_GREEN, BrightGreen);
+        fg_color!(FG_BRIGHT_MAGENTA, BrightMagenta);
+        fg_color!(FG_BRIGHT_RED, BrightRed);
+        fg_color!(FG_BRIGHT_WHITE, BrightWhite);
+        fg_color!(FG_BRIGHT_YELLOW, BrightYellow);
+        fg_color!(FG_CYAN, Cyan);
+        fg_color!(FG_GREEN, Green);
+        fg_color!(FG_MAGENTA, Magenta);
+        fg_color!(FG_RED, Red);
+        fg_color!(FG_WHITE, White);
+        fg_color!(FG_YELLOW, Yellow);
 
         macro_rules! bg_color {
             ($color:expr, $term_color:ident) => {
                 if self.contains($color) {
-                    if term.supports_color() {
-                        term.bg(term::color::$term_color)?;
+                    if term.is_terminal() {
+                        s = s.bg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::$term_color)));
                     }
                 }
             };
         }
 
-        bg_color!(BG_BLACK, BLACK);
-        bg_color!(BG_BLUE, BLUE);
-        bg_color!(BG_BRIGHT_BLACK, BRIGHT_BLACK);
-        bg_color!(BG_BRIGHT_BLUE, BRIGHT_BLUE);
-        bg_color!(BG_BRIGHT_CYAN, BRIGHT_CYAN);
-        bg_color!(BG_BRIGHT_GREEN, BRIGHT_GREEN);
-        bg_color!(BG_BRIGHT_MAGENTA, BRIGHT_MAGENTA);
-        bg_color!(BG_BRIGHT_RED, BRIGHT_RED);
-        bg_color!(BG_BRIGHT_WHITE, BRIGHT_WHITE);
-        bg_color!(BG_BRIGHT_YELLOW, BRIGHT_YELLOW);
-        bg_color!(BG_CYAN, CYAN);
-        bg_color!(BG_GREEN, GREEN);
-        bg_color!(BG_MAGENTA, MAGENTA);
-        bg_color!(BG_RED, RED);
-        bg_color!(BG_WHITE, WHITE);
-        bg_color!(BG_YELLOW, YELLOW);
+        bg_color!(BG_BLACK, Black);
+        bg_color!(BG_BLUE, Blue);
+        bg_color!(BG_BRIGHT_BLACK, BrightBlack);
+        bg_color!(BG_BRIGHT_BLUE, BrightBlue);
+        bg_color!(BG_BRIGHT_CYAN, BrightCyan);
+        bg_color!(BG_BRIGHT_GREEN, BrightGreen);
+        bg_color!(BG_BRIGHT_MAGENTA, BrightMagenta);
+        bg_color!(BG_BRIGHT_RED, BrightRed);
+        bg_color!(BG_BRIGHT_WHITE, BrightWhite);
+        bg_color!(BG_BRIGHT_YELLOW, BrightYellow);
+        bg_color!(BG_CYAN, Cyan);
+        bg_color!(BG_GREEN, Green);
+        bg_color!(BG_MAGENTA, Magenta);
+        bg_color!(BG_RED, Red);
+        bg_color!(BG_WHITE, White);
+        bg_color!(BG_YELLOW, Yellow);
 
         macro_rules! attr {
             ($attr:expr, $term_attr:expr) => {
                 if self.contains($attr) {
-                    let attr = $term_attr;
-                    if term.supports_attr(attr) {
-                        term.attr(attr)?;
+                    if term.is_terminal() {
+                        let attr = $term_attr;
+                        s = s.effects(attr);
                     }
                 }
             };
         }
 
-        attr!(BOLD, term::Attr::Bold);
-        attr!(DIM, term::Attr::Dim);
-        attr!(ITALIC, term::Attr::Italic(true));
-        attr!(UNDERLINE, term::Attr::Underline(true));
-        attr!(BLINK, term::Attr::Blink);
-        attr!(STANDOUT, term::Attr::Standout(true));
-        attr!(REVERSE, term::Attr::Reverse);
-        attr!(SECURE, term::Attr::Secure);
+        attr!(BOLD, anstyle::Effects::BOLD);
+        attr!(DIM, anstyle::Effects::DIMMED);
+        attr!(ITALIC, anstyle::Effects::ITALIC);
+        attr!(UNDERLINE, anstyle::Effects::UNDERLINE);
+        attr!(BLINK, anstyle::Effects::BLINK);
+        attr!(STANDOUT, anstyle::Effects::BOLD | anstyle::Effects::INVERT);
+        attr!(REVERSE, anstyle::Effects::INVERT);
+        attr!(SECURE, anstyle::Effects::HIDDEN);
 
-        Ok(())
+        s.write_to(term)
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-pub struct StyleCursor<'term, T: ?Sized + Terminal> {
+pub struct StyleCursor<'term, T: std::io::Write + std::io::IsTerminal> {
     current_style: Style,
     term: &'term mut T,
 }
 
-impl<'term, T: ?Sized + Terminal> StyleCursor<'term, T> {
-    pub fn new(term: &'term mut T) -> term::Result<StyleCursor<'term, T>> {
+impl<'term, T: std::io::Write + std::io::IsTerminal> StyleCursor<'term, T> {
+    pub fn new(term: &'term mut T) -> std::io::Result<StyleCursor<'term, T>> {
         let current_style = Style::default();
         current_style.apply(term)?;
         Ok(StyleCursor {
@@ -195,7 +198,7 @@ impl<'term, T: ?Sized + Terminal> StyleCursor<'term, T> {
         self.term
     }
 
-    pub fn set_style(&mut self, style: Style) -> term::Result<()> {
+    pub fn set_style(&mut self, style: Style) -> std::io::Result<()> {
         if style != self.current_style {
             style.apply(self.term)?;
             self.current_style = style;
