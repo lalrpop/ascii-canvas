@@ -141,7 +141,10 @@ impl AsciiCanvas {
         self.in_range_index(r, self.columns)
     }
 
-    pub fn write_to<T: std::io::Write>(&self, term: &mut T) -> std::io::Result<()> {
+    pub fn write_to<T: std::io::Write + std::io::IsTerminal>(
+        &self,
+        term: &mut T,
+    ) -> std::io::Result<()> {
         for row in self.to_strings() {
             row.write_to(term)?;
             writeln!(term, "")?;

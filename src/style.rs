@@ -92,14 +92,19 @@ impl Style {
     /// Attempts to apply the given style to the given terminal. If
     /// the style is not supported, either there is no effect or else
     /// a similar, substitute style may be applied.
-    pub fn apply<T: std::io::Write>(self, term: &mut T) -> std::io::Result<()> {
+    pub fn apply<T: std::io::Write + std::io::IsTerminal>(
+        self,
+        term: &mut T,
+    ) -> std::io::Result<()> {
         let mut s = anstyle::Style::new();
         s.write_reset_to(term)?;
 
         macro_rules! fg_color {
             ($color:expr, $term_color:ident) => {
                 if self.contains($color) {
-                    s = s.fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::$term_color)));
+                    if term.is_terminal() {
+                        s = s.fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::$term_color)));
+                    }
                 }
             };
         }
@@ -124,7 +129,9 @@ impl Style {
         macro_rules! bg_color {
             ($color:expr, $term_color:ident) => {
                 if self.contains($color) {
-                    s = s.bg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::$term_color)));
+                    if term.is_terminal() {
+                        s = s.bg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::$term_color)));
+                    }
                 }
             };
         }
@@ -149,8 +156,10 @@ impl Style {
         macro_rules! attr {
             ($attr:expr, $term_attr:expr) => {
                 if self.contains($attr) {
-                    let attr = $term_attr;
-                    s = s.effects(attr);
+                    if term.is_terminal() {
+                        let attr = $term_attr;
+                        s = s.effects(attr);
+                    }
                 }
             };
         }
@@ -170,12 +179,12 @@ impl Style {
 
 ///////////////////////////////////////////////////////////////////////////
 
-pub struct StyleCursor<'term, T: std::io::Write> {
+pub struct StyleCursor<'term, T: std::io::Write + std::io::IsTerminal> {
     current_style: Style,
     term: &'term mut T,
 }
 
-impl<'term, T: std::io::Write> StyleCursor<'term, T> {
+impl<'term, T: std::io::Write + std::io::IsTerminal> StyleCursor<'term, T> {
     pub fn new(term: &'term mut T) -> std::io::Result<StyleCursor<'term, T>> {
         let current_style = Style::default();
         current_style.apply(term)?;
