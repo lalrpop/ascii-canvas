@@ -13,7 +13,7 @@ fn draw_box() {
         view.draw_horizontal_line(4, 2..8);
     }
     expect_debug(
-        &canvas.to_strings(),
+        canvas.to_strings(),
         r#"
 [
     "",
@@ -38,7 +38,7 @@ fn grow_box() {
         view.draw_horizontal_line(4, 2..8);
     }
     expect_debug(
-        &canvas.to_strings(),
+        canvas.to_strings(),
         r#"
 [
     "",
@@ -65,7 +65,7 @@ fn shift() {
         view.write_chars(3, 3, "Hi!".chars(), Style::new());
     }
     expect_debug(
-        &canvas.to_strings(),
+        canvas.to_strings(),
         r#"
 [
     "",
