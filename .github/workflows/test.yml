@@ -18,7 +18,6 @@ jobs:
         rust:
           - "1.70"
           - stable
-          - beta
           - nightly
         cargo-update:
           - true
