@@ -80,13 +80,13 @@ impl<'a> dyn AsciiView + 'a {
     }
 
     /// Creates a new view onto the same canvas, but writing at an offset.
-    pub fn shift<'c>(&'c mut self, row: usize, column: usize) -> ShiftedView<'c> {
+    pub fn shift(&mut self, row: usize, column: usize) -> ShiftedView {
         ShiftedView::new(self, row, column)
     }
 
     /// Creates a new view onto the same canvas, but applying a style
     /// to all the characters written.
-    pub fn styled<'c>(&'c mut self, style: Style) -> StyleView<'c> {
+    pub fn styled(&mut self, style: Style) -> StyleView {
         StyleView::new(self, style)
     }
 }
@@ -107,8 +107,8 @@ impl AsciiCanvas {
     /// rows as needed, but the columns are fixed at creation.
     pub fn new(rows: usize, columns: usize) -> Self {
         AsciiCanvas {
-            rows: rows,
-            columns: columns,
+            rows,
+            columns,
             characters: vec![' '; columns * rows],
             styles: vec![Style::new(); columns * rows],
         }
@@ -145,7 +145,7 @@ impl AsciiCanvas {
     pub fn write_to<T: Terminal + ?Sized>(&self, term: &mut T) -> term::Result<()> {
         for row in self.to_strings() {
             row.write_to(term)?;
-            writeln!(term, "")?;
+            writeln!(term)?;
         }
         Ok(())
     }
@@ -209,13 +209,10 @@ pub struct ShiftedView<'canvas> {
 
 impl<'canvas> ShiftedView<'canvas> {
     fn new(base: &'canvas mut dyn AsciiView, row: usize, column: usize) -> Self {
-        let upper_left = Point {
-            row: row,
-            column: column,
-        };
+        let upper_left = Point { row, column };
         ShiftedView {
-            base: base,
-            upper_left: upper_left,
+            base,
+            upper_left,
             lower_right: upper_left,
         }
     }
@@ -265,10 +262,7 @@ pub struct StyleView<'canvas> {
 
 impl<'canvas> StyleView<'canvas> {
     fn new(base: &'canvas mut dyn AsciiView, style: Style) -> Self {
-        StyleView {
-            base: base,
-            style: style,
-        }
+        StyleView { base, style }
     }
 }
 
@@ -295,7 +289,7 @@ const DOWN: u8 = 0b0010;
 const LEFT: u8 = 0b0100;
 const RIGHT: u8 = 0b1000;
 
-const BOX_CHARS: &'static [(char, u8)] = &[
+const BOX_CHARS: &[(char, u8)] = &[
     ('╵', UP),
     ('│', UP | DOWN),
     ('┤', UP | DOWN | LEFT),
