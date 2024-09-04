@@ -15,6 +15,7 @@ macro_rules! declare_styles {
     ($($style:ident,)*) => {
         #[derive(Copy, Clone)]
         #[allow(non_camel_case_types)]
+        #[allow(clippy::upper_case_acronyms)]
         enum StyleBit {
             $($style,)*
         }
@@ -186,8 +187,8 @@ impl<'term, T: ?Sized + Terminal> StyleCursor<'term, T> {
         let current_style = Style::default();
         current_style.apply(term)?;
         Ok(StyleCursor {
-            current_style: current_style,
-            term: term,
+            current_style,
+            term,
         })
     }
 
