@@ -31,6 +31,6 @@ pub fn compare<D: Debug, E: Debug>(actual: D, expected: E) {
             }
         }
 
-        assert!(false);
+        unreachable!()
     }
 }
