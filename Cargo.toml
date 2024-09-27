@@ -3,9 +3,9 @@ name = "ascii-canvas"
 version = "3.0.0"
 authors = ["Niko Matsakis <niko@alum.mit.edu>"]
 description = "simple canvas for drawing lines and styled text and emitting to the terminal"
-repository = "https://github.com/nikomatsakis/ascii-canvas"
+repository = "https://github.com/lalrpop/ascii-canvas"
 license = "Apache-2.0/MIT"
-edition = "2018"
+edition = "2021"
 rust-version = "1.70"
 
 [dependencies]
