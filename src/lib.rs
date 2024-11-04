@@ -31,7 +31,7 @@ pub trait AsciiView {
     fn write_char(&mut self, row: usize, column: usize, ch: char, style: Style);
 }
 
-impl<'a> dyn AsciiView + 'a {
+impl dyn AsciiView + '_ {
     fn add_box_dirs(&mut self, row: usize, column: usize, dirs: u8) {
         let old_ch = self.read_char(row, column);
         let new_ch = add_dirs(old_ch, dirs);
@@ -233,7 +233,7 @@ impl<'canvas> ShiftedView<'canvas> {
     }
 }
 
-impl<'canvas> AsciiView for ShiftedView<'canvas> {
+impl AsciiView for ShiftedView<'_> {
     fn columns(&self) -> usize {
         self.base.columns() - self.upper_left.column
     }
@@ -266,7 +266,7 @@ impl<'canvas> StyleView<'canvas> {
     }
 }
 
-impl<'canvas> AsciiView for StyleView<'canvas> {
+impl AsciiView for StyleView<'_> {
     fn columns(&self) -> usize {
         self.base.columns()
     }
