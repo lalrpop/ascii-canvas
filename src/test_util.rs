@@ -2,7 +2,7 @@ use std::fmt::{Debug, Error, Formatter};
 
 struct ExpectedDebug<'a>(&'a str);
 
-impl<'a> Debug for ExpectedDebug<'a> {
+impl Debug for ExpectedDebug<'_> {
     fn fmt(&self, fmt: &mut Formatter<'_>) -> Result<(), Error> {
         write!(fmt, "{}", self.0)
     }
