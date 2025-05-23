@@ -20,7 +20,7 @@ impl Row {
         let mut cursor = StyleCursor::new(term)?;
         for (character, &style) in self.text.trim_end().chars().zip(&self.styles) {
             cursor.set_style(style)?;
-            write!(cursor.term(), "{}", character)?;
+            write!(cursor.term(), "{character}")?;
         }
         Ok(())
     }
