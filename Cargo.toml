@@ -6,7 +6,7 @@ description = "simple canvas for drawing lines and styled text and emitting to t
 repository = "https://github.com/lalrpop/ascii-canvas"
 license = "Apache-2.0 OR MIT"
 edition = "2021"
-rust-version = "1.70"
+rust-version = "1.81"
 
 [dependencies]
 term = "1"
