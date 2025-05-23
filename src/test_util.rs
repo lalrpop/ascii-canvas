@@ -10,24 +10,24 @@ impl Debug for ExpectedDebug<'_> {
 
 pub fn expect_debug<D: Debug>(actual: D, expected: &str) {
     compare(
-        ExpectedDebug(&format!("{:#?}", actual)),
+        ExpectedDebug(&format!("{actual:#?}")),
         ExpectedDebug(expected),
     )
 }
 
 pub fn compare<D: Debug, E: Debug>(actual: D, expected: E) {
-    let actual_s = format!("{:?}", actual);
-    let expected_s = format!("{:?}", expected);
+    let actual_s = format!("{actual:?}");
+    let expected_s = format!("{expected:?}");
 
     if actual_s != expected_s {
-        let actual_s = format!("{:#?}", actual);
-        let expected_s = format!("{:#?}", expected);
+        let actual_s = format!("{actual:#?}");
+        let expected_s = format!("{expected:#?}");
 
         for diff in diff::lines(&actual_s, &expected_s) {
             match diff {
-                diff::Result::Right(r) => println!("- {}", r),
-                diff::Result::Left(l) => println!("+ {}", l),
-                diff::Result::Both(l, _) => println!("  {}", l),
+                diff::Result::Right(r) => println!("- {r}"),
+                diff::Result::Left(l) => println!("+ {l}"),
+                diff::Result::Both(l, _) => println!("  {l}"),
             }
         }
 

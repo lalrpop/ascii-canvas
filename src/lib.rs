@@ -318,7 +318,7 @@ fn box_char_for_dirs(dirs: u8) -> char {
             return c;
         }
     }
-    panic!("no box character for dirs: {:b}", dirs);
+    panic!("no box character for dirs: {dirs:b}");
 }
 
 fn dirs_for_box_char(ch: char) -> Option<u8> {
