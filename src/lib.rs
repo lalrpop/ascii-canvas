@@ -80,13 +80,13 @@ impl dyn AsciiView + '_ {
     }
 
     /// Creates a new view onto the same canvas, but writing at an offset.
-    pub fn shift(&mut self, row: usize, column: usize) -> ShiftedView {
+    pub fn shift(&mut self, row: usize, column: usize) -> ShiftedView<'_> {
         ShiftedView::new(self, row, column)
     }
 
     /// Creates a new view onto the same canvas, but applying a style
     /// to all the characters written.
-    pub fn styled(&mut self, style: Style) -> StyleView {
+    pub fn styled(&mut self, style: Style) -> StyleView<'_> {
         StyleView::new(self, style)
     }
 }
