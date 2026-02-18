@@ -9,7 +9,7 @@ edition = "2021"
 rust-version = "1.81"
 
 [dependencies]
-term = "1"
+anstyle = "1.0"
 
 [dev-dependencies]
 diff = "0.1"

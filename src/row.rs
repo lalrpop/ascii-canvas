@@ -1,6 +1,5 @@
 use crate::style::{Style, StyleCursor};
 use std::fmt::{Debug, Display, Error, Formatter};
-use term::{self, Terminal};
 
 pub struct Row {
     text: String,
@@ -16,7 +15,10 @@ impl Row {
         }
     }
 
-    pub fn write_to<T: Terminal + ?Sized>(&self, term: &mut T) -> term::Result<()> {
+    pub fn write_to<T: std::io::Write + std::io::IsTerminal>(
+        &self,
+        term: &mut T,
+    ) -> std::io::Result<()> {
         let mut cursor = StyleCursor::new(term)?;
         for (character, &style) in self.text.trim_end().chars().zip(&self.styles) {
             cursor.set_style(style)?;
